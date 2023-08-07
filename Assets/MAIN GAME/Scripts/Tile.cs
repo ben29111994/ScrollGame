@@ -44,7 +44,7 @@ public class Tile : MonoBehaviour
         }
         else
             meshRenderer.material.color = tileColor;
-        tag = "Pixel";
+        //tag = "Pixel";
     }
 
     //private void OnCollisionEnter(Collision collision)

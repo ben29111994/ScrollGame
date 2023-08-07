@@ -11,6 +11,7 @@ public class LevelGenerator : MonoBehaviour {
     public Texture2D map;
     public Tile tilePrefab;
     public GameObject parentObject;
+    public GameObject wallPrefab;
     public int numOfStacks;
     public int totalBall;
     Transform currentParent;
@@ -57,14 +58,32 @@ public class LevelGenerator : MonoBehaviour {
         Vector3 positionTileParent = new Vector3(-((texture.width - 1) * ratio / 2), 0, -((texture.height - 1) * ratio / 2));
         currentParent.localPosition = positionTileParent;
 
-        for (int x = 0; x <= texture.width - 1; x++)
+        for (int x = -1; x <= texture.width; x++)
         {
-            for (int y = 0; y <= texture.height - 1; y++)
+            for (int y = -1; y <= texture.height; y++)
             {
-                totalBall++;
-                GenerateTile(texture, x, y, ratio);
+                if (x == texture.width || y == texture.height || x == -1 || y == -1)
+                {
+                    GenerateWall(texture, x, y, ratio);
+                }
+                else
+                {
+                    GenerateTile(texture, x, y, ratio);
+                }
             }
         }
+    }
+
+    void GenerateWall(Texture2D texture, int x, int y, float ratio)
+    {
+        GameObject wall;
+
+        wall = Instantiate(wallPrefab);
+        Vector3 scale = Vector3.one * 1f;
+        Vector3 pos = new Vector3(x - texture.width / 2, 0, y) * ratio;
+        wall.transform.parent = currentParent;
+        wall.transform.localScale = scale;
+        wall.transform.localPosition = pos;
     }
 
     private void GenerateTile(Texture2D texture, int x, int y, float ratio)
@@ -93,31 +112,35 @@ public class LevelGenerator : MonoBehaviour {
         hex = hex.Remove(6, 2);
         hex = hex.ToLower();
         Debug.Log(hex);
-        scale = Vector3.one * 0.145f;
+        scale = Vector3.one * 0.098f;
 
         switch (hex)
         {
+            //up
             case "62f527":
-                instance = Instantiate(listScrolls[4]);
+                instance = Instantiate(listScrolls[3]);
+                instance.transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            //down
+            case "279cf5":
+                instance = Instantiate(listScrolls[3]);
                 instance.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
-            case "279cf5":
-                instance = Instantiate(listScrolls[4]);
-                instance.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
+            //left
             case "f44236":
-                instance = Instantiate(listScrolls[4]);
-                break;
-            case "cc27f5":
-                instance = Instantiate(listScrolls[4]);
+                instance = Instantiate(listScrolls[3]);
                 instance.transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            //right
+            case "cc27f5":
+                instance = Instantiate(listScrolls[3]);
                 break;
             case "2762f5":
-                instance = Instantiate(listScrolls[2]);
+                instance = Instantiate(listScrolls[1]);
+                instance.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "eef527":
-                instance = Instantiate(listScrolls[2]);
-                instance.transform.localEulerAngles = new Vector3(0, 180, 0);
+                instance = Instantiate(listScrolls[1]);
                 break;
             default:
                 instance = null;

@@ -69,6 +69,7 @@ public class GameController : MonoBehaviour
     public GameObject winBG;
     public GameObject gemAnim;
     public GameObject gameplay2;
+    List<Transform> listReleaseScroll = new List<Transform>();
     
 
     private void Awake()
@@ -124,20 +125,20 @@ public class GameController : MonoBehaviour
     private void FixedUpdate()
     {
         //Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, new Vector3(transform.position.x, CameraOffsetY, transform.position.z - CameraOffsetZ), Time.deltaTime * 30);
-        if(joystick.joystickHeld) { ButtonStartGame(); }
+        if (Input.GetMouseButton(0)) { ButtonStartGame(); }
         if (isPlaying)
         {
-            timer -= Time.deltaTime;
-            timerTxt.text = ((int)timer).ToString() + "s";
-            if(timer <= 5)
-            {
-                timerTxt.color = Color.red;
-                timerTxt.transform.localScale = Vector3.one * 1.5f;
-            }
-            if(timer <= 0)
-            {
-                StartCoroutine(Win());
-            }
+            //timer -= Time.deltaTime;
+            //timerTxt.text = ((int)timer).ToString() + "s";
+            //if(timer <= 5)
+            //{
+            //    timerTxt.color = Color.red;
+            //    timerTxt.transform.localScale = Vector3.one * 1.5f;
+            //}
+            //if(timer <= 0)
+            //{
+            //    StartCoroutine(Win());
+            //}
             Control();
 
             for (int i = 0; i < pixels.Count; i++)
@@ -218,8 +219,9 @@ public class GameController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000, scrollMask))
             {
-                if (hit.transform.CompareTag("X") || hit.transform.CompareTag("Y"))
+                if (hit.transform.CompareTag("Scroll"))
                 {
+                    Debug.LogError(hit.transform.name);
                     isDrag = true;
                     startPoint = hit.point;
                     targetScroll = hit.transform.gameObject;
@@ -242,7 +244,7 @@ public class GameController : MonoBehaviour
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, 1000, dragMask))
+                if (Physics.Raycast(ray, out hit, 1000, scrollMask))
                 {
                     endPoint = hit.point;
                 }
@@ -250,34 +252,82 @@ public class GameController : MonoBehaviour
                 currentMousePos = Input.mousePosition;
                 Vector3 delta = lastMousePos - currentMousePos;
                 lastMousePos = currentMousePos;
-  
 
+                MMVibrationManager.Haptic(HapticTypes.MediumImpact);
+                Vector3 dragVectorDirection = (endPoint - startPoint).normalized;
                 float checkDrag = Vector3.Distance(startPoint, endPoint);
+                DraggedDirection dir;
                 if (checkDrag > 0.5f)
                 {
-                }
+                    Debug.LogError(dragVectorDirection);
+                    dir = GetDragDirection(dragVectorDirection);
 
-                var scrollLenght = targetScroll.transform.GetChild(0).name;
-                if (targetScroll.CompareTag("X"))
-                {
-                    if (endPoint.x < startPoint.x && Mathf.Abs(startPoint.x - endPoint.x) > Mathf.Abs(startPoint.y - endPoint.y))
+                    var scroll = targetScroll.transform.parent;
+                    var scrollControl = targetScroll.GetComponent<ScrollControl>();
+
+                    if (dir == DraggedDirection.Right)
                     {
-                        print("Right");
+                        if (scroll.transform.localEulerAngles.y == 0)
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 180)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scroll.Translate(Vector3.left);
+                        }
                     }
-                    else if (Mathf.Abs(startPoint.x - endPoint.x) > Mathf.Abs(startPoint.y - endPoint.y))
+                    else if (dir == DraggedDirection.Left)
                     {
-                        print("Left");
+                        if (scroll.transform.localEulerAngles.y == 180)
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 0)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scroll.Translate(Vector3.left);
+                        }
                     }
-                }
-                else if (targetScroll.CompareTag("Y"))
-                {
-                    if (endPoint.y < startPoint.y && Mathf.Abs(startPoint.y - endPoint.y) > Mathf.Abs(startPoint.x - endPoint.x))
+                    else if (dir == DraggedDirection.Up)
                     {
-                        print("Up");
+                        if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scroll.Translate(Vector3.left);
+                        }
                     }
-                    else if (Mathf.Abs(startPoint.y - endPoint.y) > Mathf.Abs(startPoint.x - endPoint.x))
+                    else if (dir == DraggedDirection.Down)
                     {
-                        print("Down");
+                        if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scroll.Translate(Vector3.left);
+                        }
                     }
                 }
             }
@@ -287,20 +337,33 @@ public class GameController : MonoBehaviour
     void OnMouseUp()
     {
         if (isDrag)
-        {
-            MMVibrationManager.Haptic(HapticTypes.MediumImpact);
-            float checkDrag = Vector3.Distance(startPoint, endPoint);
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1000, scrollMask))
-            {
-                if (checkDrag > 2f)
-                {
-                    var tempPoint = endPoint;
-                }
-            }
+        {           
             isDrag = false;
         }
+    }
+
+    private enum DraggedDirection
+    {
+        Up,
+        Down,
+        Right,
+        Left
+    }
+
+    private DraggedDirection GetDragDirection(Vector3 dragVector)
+    {
+        float positiveX = Mathf.Abs(dragVector.x);
+        float positiveY = Mathf.Abs(dragVector.z);
+        DraggedDirection draggedDir;
+        if (positiveX > positiveY)
+        {
+            draggedDir = (dragVector.x > 0) ? DraggedDirection.Right : DraggedDirection.Left;
+        }
+        else
+        {
+            draggedDir = (dragVector.z > 0) ? DraggedDirection.Up : DraggedDirection.Down;
+        }
+        return draggedDir;
     }
 
     IEnumerator delayVibrate()
