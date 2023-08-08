@@ -221,7 +221,6 @@ public class GameController : MonoBehaviour
             {
                 if (hit.transform.CompareTag("Scroll"))
                 {
-                    Debug.LogError(hit.transform.name);
                     isDrag = true;
                     startPoint = hit.point;
                     targetScroll = hit.transform.gameObject;
@@ -251,85 +250,7 @@ public class GameController : MonoBehaviour
 
                 currentMousePos = Input.mousePosition;
                 Vector3 delta = lastMousePos - currentMousePos;
-                lastMousePos = currentMousePos;
-
-                MMVibrationManager.Haptic(HapticTypes.MediumImpact);
-                Vector3 dragVectorDirection = (endPoint - startPoint).normalized;
-                float checkDrag = Vector3.Distance(startPoint, endPoint);
-                DraggedDirection dir;
-                if (checkDrag > 0.5f)
-                {
-                    Debug.LogError(dragVectorDirection);
-                    dir = GetDragDirection(dragVectorDirection);
-
-                    var scroll = targetScroll.transform.parent;
-                    var scrollControl = targetScroll.GetComponent<ScrollControl>();
-
-                    if (dir == DraggedDirection.Right)
-                    {
-                        if (scroll.transform.localEulerAngles.y == 0)
-                        {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
-                        }
-                        else if (scroll.transform.localEulerAngles.y == 180)
-                        {
-                            listReleaseScroll.Remove(scroll);
-                            if (scrollControl.isReleased)
-                                scrollControl.ScrollReap();
-                            else
-                                scroll.Translate(Vector3.left);
-                        }
-                    }
-                    else if (dir == DraggedDirection.Left)
-                    {
-                        if (scroll.transform.localEulerAngles.y == 180)
-                        {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
-                        }
-                        else if (scroll.transform.localEulerAngles.y == 0)
-                        {
-                            listReleaseScroll.Remove(scroll);
-                            if (scrollControl.isReleased)
-                                scrollControl.ScrollReap();
-                            else
-                                scroll.Translate(Vector3.left);
-                        }
-                    }
-                    else if (dir == DraggedDirection.Up)
-                    {
-                        if (scroll.transform.localEulerAngles.y == 270)
-                        {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
-                        }
-                        else if (scroll.transform.localEulerAngles.y == 90)
-                        {
-                            listReleaseScroll.Remove(scroll);
-                            if (scrollControl.isReleased)
-                                scrollControl.ScrollReap();
-                            else
-                                scroll.Translate(Vector3.left);
-                        }
-                    }
-                    else if (dir == DraggedDirection.Down)
-                    {
-                        if (scroll.transform.localEulerAngles.y == 90)
-                        {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
-                        }
-                        else if (scroll.transform.localEulerAngles.y == 270)
-                        {
-                            listReleaseScroll.Remove(scroll);
-                            if (scrollControl.isReleased)
-                                scrollControl.ScrollReap();
-                            else
-                                scroll.Translate(Vector3.left);
-                        }
-                    }
-                }
+                lastMousePos = currentMousePos;             
             }
         }
     }
@@ -337,7 +258,87 @@ public class GameController : MonoBehaviour
     void OnMouseUp()
     {
         if (isDrag)
-        {           
+        {
+            MMVibrationManager.Haptic(HapticTypes.MediumImpact);
+            Vector3 dragVectorDirection = (endPoint - startPoint).normalized;
+            float checkDrag = Vector3.Distance(startPoint, endPoint);
+            DraggedDirection dir;
+            if (checkDrag > 0.5f)
+            {
+                dir = GetDragDirection(dragVectorDirection);
+
+                var scroll = targetScroll.transform.parent;
+                var scrollControl = targetScroll.GetComponent<ScrollControl>();
+
+                if (dir == DraggedDirection.Right)
+                {
+                    Debug.Log("Right");
+                    if (scroll.transform.localEulerAngles.y == 0 && !scrollControl.isReleased)
+                    {
+                        listReleaseScroll.Add(scroll);
+                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                    }
+                    else if (scroll.transform.localEulerAngles.y == 180)
+                    {
+                        listReleaseScroll.Remove(scroll);
+                        if (scrollControl.isReleased)
+                            scrollControl.ScrollReap();
+                        else
+                            scrollControl.ScrollMove();
+                    }
+                }
+                else if (dir == DraggedDirection.Left)
+                {
+                    Debug.Log("Left");
+                    if (scroll.transform.localEulerAngles.y == 180 && !scrollControl.isReleased)
+                    {
+                        listReleaseScroll.Add(scroll);
+                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                    }
+                    else if (scroll.transform.localEulerAngles.y == 0)
+                    {
+                        listReleaseScroll.Remove(scroll);
+                        if (scrollControl.isReleased)
+                            scrollControl.ScrollReap();
+                        else
+                            scrollControl.ScrollMove();
+                    }
+                }
+                else if (dir == DraggedDirection.Up)
+                {
+                    Debug.Log("Up");
+                    if (scroll.transform.localEulerAngles.y == 270 && !scrollControl.isReleased)
+                    {
+                        listReleaseScroll.Add(scroll);
+                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                    }
+                    else if (scroll.transform.localEulerAngles.y == 90)
+                    {
+                        listReleaseScroll.Remove(scroll);
+                        if (scrollControl.isReleased)
+                            scrollControl.ScrollReap();
+                        else
+                            scrollControl.ScrollMove();
+                    }
+                }
+                else if (dir == DraggedDirection.Down)
+                {
+                    Debug.Log("Down");
+                    if (scroll.transform.localEulerAngles.y == 90 && !scrollControl.isReleased)
+                    {
+                        listReleaseScroll.Add(scroll);
+                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                    }
+                    else if (scroll.transform.localEulerAngles.y == 270)
+                    {
+                        listReleaseScroll.Remove(scroll);
+                        if (scrollControl.isReleased)
+                            scrollControl.ScrollReap();
+                        else
+                            scrollControl.ScrollMove();
+                    }
+                }
+            }
             isDrag = false;
         }
     }
