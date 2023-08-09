@@ -14,6 +14,7 @@ public class ScrollControl : MonoBehaviour
     float baseOffset;
     bool isReleasing;
     public bool isReleased;
+    bool isTouchWall;
     public LayerMask layerMask;
     // Start is called before the first frame update
 
@@ -35,6 +36,11 @@ public class ScrollControl : MonoBehaviour
             //addCollider.isTrigger = true;
             isReleasing = false;
             isReleased = true;
+            if(isTouchWall)
+            {
+                ScrollReap();
+                isTouchWall = false;
+            }
         });      
     }
 
@@ -70,26 +76,41 @@ public class ScrollControl : MonoBehaviour
                 targetHitPos = hit.transform.parent.transform.localPosition;
             }
         }
+        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset + 10, 0.5f).OnComplete(() => {
+            isReleased = false;
+        });
         if (parentControl.localEulerAngles.y == 0 || parentControl.localEulerAngles.y == 180)
         {
             if(targetHitPos.x < 0)
             {
-                parentControl.DOLocalMoveX(targetHitPos.x + 1, 0.5f);
+                parentControl.DOLocalMoveX(targetHitPos.x + 1, 0.5f)
+                    .OnComplete(() => {
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
+                    }); ;
             }
             else
             {
-                parentControl.DOLocalMoveX(targetHitPos.x - 1, 0.5f);
+                parentControl.DOLocalMoveX(targetHitPos.x - 1, 0.5f)
+                    .OnComplete(() => {
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
+                    }); ;
             }
         }
         else
         {
             if (targetHitPos.z < 0)
             {
-                parentControl.DOLocalMoveZ(targetHitPos.z + 1, 0.5f);
+                parentControl.DOLocalMoveZ(targetHitPos.z + 1, 0.5f)
+                    .OnComplete(() => {
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
+                    }); ;
             }
             else
             {
-                parentControl.DOLocalMoveZ(targetHitPos.z - 1, 0.5f);
+                parentControl.DOLocalMoveZ(targetHitPos.z - 1, 0.5f)
+                    .OnComplete(() => {
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
+                    }); ;
             }
         }
     }
@@ -111,12 +132,19 @@ public class ScrollControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Scroll") || other.CompareTag("Wall"))
+        if(other.CompareTag("Scroll"))
         {
             if(isReleasing)
             {
                 DOTween.KillAll();
                 ScrollReap();
+            }
+        }
+        if(other.CompareTag("Wall"))
+        {
+            if (isReleasing)
+            {
+                isTouchWall = true;       
             }
         }
     }

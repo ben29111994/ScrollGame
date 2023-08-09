@@ -273,12 +273,20 @@ public class GameController : MonoBehaviour
                 if (dir == DraggedDirection.Right)
                 {
                     Debug.Log("Right");
-                    if (scroll.transform.localEulerAngles.y == 0 && !scrollControl.isReleased)
+                    if (scroll.transform.localEulerAngles.y == 0 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 180))
                     {
-                        listReleaseScroll.Add(scroll);
-                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        if (scrollControl.isReleased)
+                        {
+                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                            scrollControl.ScrollReap();
+                        }
+                        else
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 180)
+                    else if (scroll.transform.localEulerAngles.y == 180 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 0))
                     {
                         listReleaseScroll.Remove(scroll);
                         if (scrollControl.isReleased)
@@ -290,12 +298,20 @@ public class GameController : MonoBehaviour
                 else if (dir == DraggedDirection.Left)
                 {
                     Debug.Log("Left");
-                    if (scroll.transform.localEulerAngles.y == 180 && !scrollControl.isReleased)
+                    if (scroll.transform.localEulerAngles.y == 180 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 0))
                     {
-                        listReleaseScroll.Add(scroll);
-                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        if (scrollControl.isReleased)
+                        {
+                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                            scrollControl.ScrollReap();
+                        }
+                        else
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 0)
+                    else if (scroll.transform.localEulerAngles.y == 0 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 180))
                     {
                         listReleaseScroll.Remove(scroll);
                         if (scrollControl.isReleased)
@@ -307,12 +323,20 @@ public class GameController : MonoBehaviour
                 else if (dir == DraggedDirection.Up)
                 {
                     Debug.Log("Up");
-                    if (scroll.transform.localEulerAngles.y == 270 && !scrollControl.isReleased)
+                    if (scroll.transform.localEulerAngles.y == 270 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 90))
                     {
-                        listReleaseScroll.Add(scroll);
-                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        if (scrollControl.isReleased)
+                        {
+                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                            scrollControl.ScrollReap();
+                        }
+                        else
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 90)
+                    else if (scroll.transform.localEulerAngles.y == 90 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 270))
                     {
                         listReleaseScroll.Remove(scroll);
                         if (scrollControl.isReleased)
@@ -324,12 +348,20 @@ public class GameController : MonoBehaviour
                 else if (dir == DraggedDirection.Down)
                 {
                     Debug.Log("Down");
-                    if (scroll.transform.localEulerAngles.y == 90 && !scrollControl.isReleased)
+                    if (scroll.transform.localEulerAngles.y == 90 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 270))
                     {
-                        listReleaseScroll.Add(scroll);
-                        scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        if (scrollControl.isReleased)
+                        {
+                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                            scrollControl.ScrollReap();
+                        }
+                        else
+                        {
+                            listReleaseScroll.Add(scroll);
+                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                        }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 270)
+                    else if (scroll.transform.localEulerAngles.y == 270 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 90))
                     {
                         listReleaseScroll.Remove(scroll);
                         if (scrollControl.isReleased)
