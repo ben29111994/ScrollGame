@@ -5,7 +5,8 @@ using System.Collections;
 public class LevelGenerator : MonoBehaviour {
 
     public static LevelGenerator Instance;
-    public List<Texture2D> list2DMaps = new List<Texture2D>();
+    [Header("Level And Tasks")]
+    public List<Tasks> list2DMaps = new List<Tasks>();
     public List<Color32> listColors = new List<Color32>();
     public List<Tile> listScrolls = new List<Tile>();
     public Texture2D map;
@@ -18,16 +19,23 @@ public class LevelGenerator : MonoBehaviour {
     Vector3 originalPos;
     float width;
 
+    [System.Serializable]
+    public class Tasks
+    {
+        public List<Texture2D> listTasks = new List<Texture2D>();
+    }
+
     void Start()
     {
         Instance = this;
         var currentLevel = DataManager.Instance.LevelGame;
+        var currentTask = DataManager.Instance.Task;
         if(currentLevel >= list2DMaps.Count - 1)
         {
             currentLevel = 0;
             DataManager.Instance.LevelGame = currentLevel;
         }
-        map = list2DMaps[currentLevel];
+        map = list2DMaps[6].listTasks[currentTask];
         originalPos = parentObject.transform.position;
         currentParent = parentObject.transform;
         GameController.totalPixel = 0;
@@ -79,7 +87,7 @@ public class LevelGenerator : MonoBehaviour {
         GameObject wall;
 
         wall = Instantiate(wallPrefab);
-        Vector3 scale = Vector3.one * 1f;
+        Vector3 scale = Vector3.one * 0.1f;
         Vector3 pos = new Vector3(x - texture.width / 2, 0, y) * ratio;
         wall.transform.parent = currentParent;
         wall.transform.localScale = scale;
@@ -99,7 +107,7 @@ public class LevelGenerator : MonoBehaviour {
         Tile floor;
 
         floor = Instantiate(tilePrefab);
-        Vector3 scale = Vector3.one * 1f;
+        Vector3 scale = Vector3.one * 0.1f;
         Vector3 pos = new Vector3(x - texture.width / 2, 0, y) * ratio;
         floor.transform.parent = currentParent;
         floor.transform.localScale = scale;
@@ -112,10 +120,38 @@ public class LevelGenerator : MonoBehaviour {
         hex = hex.Remove(6, 2);
         hex = hex.ToLower();
         Debug.Log(hex);
-        scale = Vector3.one * 0.098f;
+        scale = Vector3.one * 0.1f;
 
         switch (hex)
         {
+            //up
+            case "2ae9f7":
+                instance = Instantiate(listScrolls[1]);
+                instance.transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            //down
+            case "c6f723":
+                instance = Instantiate(listScrolls[1]);
+                instance.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            //left
+            case "2762f5":
+                instance = Instantiate(listScrolls[1]);
+                instance.transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            //right
+            case "eef527":
+                instance = Instantiate(listScrolls[1]);
+                break;
+            //left
+            case "04db9e":
+                instance = Instantiate(listScrolls[2]);
+                instance.transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            //right
+            case "d98404":
+                instance = Instantiate(listScrolls[2]);
+                break;
             //up
             case "62f527":
                 instance = Instantiate(listScrolls[3]);
@@ -135,12 +171,34 @@ public class LevelGenerator : MonoBehaviour {
             case "cc27f5":
                 instance = Instantiate(listScrolls[3]);
                 break;
-            case "2762f5":
-                instance = Instantiate(listScrolls[1]);
+            //up
+            case "fae605":
+                instance = Instantiate(listScrolls[4]);
+                instance.transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            //down
+            case "fa0526":
+                instance = Instantiate(listScrolls[4]);
+                instance.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            //left
+            case "2efa05":
+                instance = Instantiate(listScrolls[4]);
                 instance.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case "eef527":
-                instance = Instantiate(listScrolls[1]);
+            //right
+            case "ee05fa":
+                instance = Instantiate(listScrolls[4]);
+                break;
+            //up
+            case "3facfa":
+                instance = Instantiate(listScrolls[5]);
+                instance.transform.localEulerAngles = new Vector3(0, 270, 0);
+                break;
+            //down
+            case "fa41cf":
+                instance = Instantiate(listScrolls[5]);
+                instance.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
             default:
                 instance = null;
@@ -151,7 +209,7 @@ public class LevelGenerator : MonoBehaviour {
         {
             instance.transform.parent = currentParent;
             instance.transform.localScale = scale;
-            pos = new Vector3(x - texture.width / 2, 0.5f, y) * ratio;
+            pos = new Vector3(x - texture.width / 2 * ratio, 0.5f, y * ratio);
             GameController.totalPixel++;
             instance.Init();
             instance.SetTransfrom(pos);

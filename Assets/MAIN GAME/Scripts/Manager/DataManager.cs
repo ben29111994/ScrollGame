@@ -30,11 +30,23 @@ public class DataManager : MonoBehaviour
     {
         get
         {
-            return PlayerPrefs.GetInt("LevelGame") == 0 ? 1 : PlayerPrefs.GetInt("LevelGame");
+            return PlayerPrefs.GetInt("LevelGame");
         }
         set
         {
             PlayerPrefs.SetInt("LevelGame",value);
+        }
+    }
+
+    public int Task
+    {
+        get
+        {
+            return PlayerPrefs.GetInt("Task");
+        }
+        set
+        {
+            PlayerPrefs.SetInt("Task", value);
         }
     }
 
