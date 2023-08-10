@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using DG.Tweening;
 
 public class LevelGenerator : MonoBehaviour {
 
@@ -18,6 +19,7 @@ public class LevelGenerator : MonoBehaviour {
     Transform currentParent;
     Vector3 originalPos;
     float width;
+    List<float> listPosX = new List<float>();
 
     [System.Serializable]
     public class Tasks
@@ -35,13 +37,20 @@ public class LevelGenerator : MonoBehaviour {
             currentLevel = 0;
             DataManager.Instance.LevelGame = currentLevel;
         }
-        map = list2DMaps[6].listTasks[currentTask];
+        map = list2DMaps[22].listTasks[currentTask];
         originalPos = parentObject.transform.position;
         currentParent = parentObject.transform;
         GameController.totalPixel = 0;
         GenerateMap(map);
         parentObject.transform.position = originalPos;
         parentObject.transform.localScale = Vector3.one * (20 / width);
+        float centerPos = 0;
+        for (int i = 0; i < listPosX.Count; i++)
+        {
+            centerPos += listPosX[i] * parentObject.transform.localScale.x;
+        }
+        centerPos /= listPosX.Count;
+        parentObject.transform.DOMoveX(Mathf.Abs(centerPos), 0);
     }
 
     private void GenerateMap(Texture2D texture)
@@ -63,8 +72,8 @@ public class LevelGenerator : MonoBehaviour {
             ratio = 1;
         }
 
-        Vector3 positionTileParent = new Vector3(-((texture.width - 1) * ratio / 2), 0, -((texture.height - 1) * ratio / 2));
-        currentParent.localPosition = positionTileParent;
+        Vector3 positionTileParent = new Vector3(-((texture.width - 1) / 2), 0, -((texture.height - 1) / 2));
+        currentParent.localPosition = positionTileParent;      
 
         for (int x = -1; x <= texture.width; x++)
         {
@@ -88,7 +97,7 @@ public class LevelGenerator : MonoBehaviour {
 
         wall = Instantiate(wallPrefab);
         Vector3 scale = Vector3.one * 0.1f;
-        Vector3 pos = new Vector3(x - texture.width / 2, 0, y) * ratio;
+        Vector3 pos = new Vector3(x - texture.width / 2, 0, y);
         wall.transform.parent = currentParent;
         wall.transform.localScale = scale;
         wall.transform.localPosition = pos;
@@ -108,7 +117,9 @@ public class LevelGenerator : MonoBehaviour {
 
         floor = Instantiate(tilePrefab);
         Vector3 scale = Vector3.one * 0.1f;
-        Vector3 pos = new Vector3(x - texture.width / 2, 0, y) * ratio;
+        Vector3 pos = new Vector3(x - texture.width / 2, 0, y);
+        if(y==0)
+            listPosX.Add(pos.x);
         floor.transform.parent = currentParent;
         floor.transform.localScale = scale;
         floor.Init();
@@ -209,7 +220,7 @@ public class LevelGenerator : MonoBehaviour {
         {
             instance.transform.parent = currentParent;
             instance.transform.localScale = scale;
-            pos = new Vector3(x - texture.width / 2 * ratio, 0.5f, y * ratio);
+            pos = new Vector3(x - texture.width / 2, 0.5f, y);
             GameController.totalPixel++;
             instance.Init();
             instance.SetTransfrom(pos);
