@@ -454,7 +454,7 @@ public class GameController : MonoBehaviour
     IEnumerator delayRefreshInstancer()
     {
         yield return new WaitForSeconds(0.01f);
-        AddRemoveInstances.instance.Setup();
+        //AddRemoveInstances.instance.Setup();
     }
 
     public void LoadGamePlay2()

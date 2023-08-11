@@ -131,7 +131,7 @@ public class LevelGenerator : MonoBehaviour {
         hex = hex.Remove(6, 2);
         hex = hex.ToLower();
         Debug.Log(hex);
-        scale = Vector3.one * 0.1f;
+        scale = Vector3.one * 0.098f;
 
         switch (hex)
         {
