@@ -270,104 +270,210 @@ public class GameController : MonoBehaviour
                 var scroll = targetScroll.transform.parent;
                 var scrollControl = targetScroll.GetComponent<ScrollControl>();
 
-                if (dir == DraggedDirection.Right)
+                if (scrollControl.transform.localScale.x > 0)
                 {
-                    Debug.Log("Right");
-                    if (scroll.transform.localEulerAngles.y == 0 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 180))
+                    if (dir == DraggedDirection.Right)
                     {
-                        if (scrollControl.isReleased)
+                        Debug.Log("Right");
+                        if (scroll.transform.localEulerAngles.y == 0 )
                         {
-                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                            scrollControl.ScrollReap();
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
                         }
-                        else
+                        else if (scroll.transform.localEulerAngles.y == 180)
                         {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
                         }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 180 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 0))
+                    else if (dir == DraggedDirection.Left)
                     {
-                        listReleaseScroll.Remove(scroll);
-                        if (scrollControl.isReleased)
-                            scrollControl.ScrollReap();
-                        else
-                            scrollControl.ScrollMove();
+                        Debug.Log("Left");
+                        if (scroll.transform.localEulerAngles.y == 180)
+                        {
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 0)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
+                        }
+                    }
+                    else if (dir == DraggedDirection.Up)
+                    {
+                        Debug.Log("Up");
+                        if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
+                        }
+                    }
+                    else if (dir == DraggedDirection.Down)
+                    {
+                        Debug.Log("Down");
+                        if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
+                        }
                     }
                 }
-                else if (dir == DraggedDirection.Left)
+                else //in case scale = -1
                 {
-                    Debug.Log("Left");
-                    if (scroll.transform.localEulerAngles.y == 180 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 0))
+                    if (dir == DraggedDirection.Right)
                     {
-                        if (scrollControl.isReleased)
+                        Debug.Log("Right");
+                        if (scroll.transform.localEulerAngles.y == 180)
                         {
-                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                            scrollControl.ScrollReap();
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
                         }
-                        else
+                        else if (scroll.transform.localEulerAngles.y == 0)
                         {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
-                        }
-                    }
-                    else if (scroll.transform.localEulerAngles.y == 0 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 180))
-                    {
-                        listReleaseScroll.Remove(scroll);
-                        if (scrollControl.isReleased)
-                            scrollControl.ScrollReap();
-                        else
-                            scrollControl.ScrollMove();
-                    }
-                }
-                else if (dir == DraggedDirection.Up)
-                {
-                    Debug.Log("Up");
-                    if (scroll.transform.localEulerAngles.y == 270 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 90))
-                    {
-                        if (scrollControl.isReleased)
-                        {
-                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                            scrollControl.ScrollReap();
-                        }
-                        else
-                        {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
                         }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 90 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 270))
+                    else if (dir == DraggedDirection.Left)
                     {
-                        listReleaseScroll.Remove(scroll);
-                        if (scrollControl.isReleased)
-                            scrollControl.ScrollReap();
-                        else
-                            scrollControl.ScrollMove();
-                    }
-                }
-                else if (dir == DraggedDirection.Down)
-                {
-                    Debug.Log("Down");
-                    if (scroll.transform.localEulerAngles.y == 90 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 270))
-                    {
-                        if (scrollControl.isReleased)
+                        Debug.Log("Left");
+                        if (scroll.transform.localEulerAngles.y == 0)
                         {
-                            scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                            scrollControl.ScrollReap();
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
                         }
-                        else
+                        else if (scroll.transform.localEulerAngles.y == 180)
                         {
-                            listReleaseScroll.Add(scroll);
-                            scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
                         }
                     }
-                    else if (scroll.transform.localEulerAngles.y == 270 || (scrollControl.transform.localScale.x < 0 && scroll.transform.localEulerAngles.y == 90))
+                    else if (dir == DraggedDirection.Up)
                     {
-                        listReleaseScroll.Remove(scroll);
-                        if (scrollControl.isReleased)
-                            scrollControl.ScrollReap();
-                        else
-                            scrollControl.ScrollMove();
+                        Debug.Log("Up");
+                        if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
+                        }
+                    }
+                    else if (dir == DraggedDirection.Down)
+                    {
+                        Debug.Log("Down");
+                        if (scroll.transform.localEulerAngles.y == 270)
+                        {
+                            if (scrollControl.isReleased)
+                            {
+                                scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
+                                scrollControl.ScrollReap();
+                            }
+                            else
+                            {
+                                listReleaseScroll.Add(scroll);
+                                scrollControl.ScrollRelease(listReleaseScroll.Count * 0.01f);
+                            }
+                        }
+                        else if (scroll.transform.localEulerAngles.y == 90)
+                        {
+                            listReleaseScroll.Remove(scroll);
+                            if (scrollControl.isReleased)
+                                scrollControl.ScrollReap();
+                            else
+                                scrollControl.ScrollMove();
+                        }
                     }
                 }
             }

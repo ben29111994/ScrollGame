@@ -37,7 +37,7 @@ public class LevelGenerator : MonoBehaviour {
             currentLevel = 0;
             DataManager.Instance.LevelGame = currentLevel;
         }
-        map = list2DMaps[22].listTasks[currentTask];
+        map = list2DMaps[35].listTasks[currentTask];
         originalPos = parentObject.transform.position;
         currentParent = parentObject.transform;
         GameController.totalPixel = 0;

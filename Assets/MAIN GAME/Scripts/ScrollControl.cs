@@ -36,11 +36,11 @@ public class ScrollControl : MonoBehaviour
             //addCollider.isTrigger = true;
             isReleasing = false;
             isReleased = true;
-            //if(isTouchWall)
-            //{
-            //    ScrollReap();
-            //    isTouchWall = false;
-            //}
+            if (isTouchWall)
+            {
+                ScrollReap();
+                isTouchWall = false;
+            }
         });      
     }
 
@@ -63,8 +63,13 @@ public class ScrollControl : MonoBehaviour
         Vector3 targetHitPos = Vector3.zero;
         var parentControl = transform.parent.transform;
         RaycastHit hit;
-        if (Physics.Raycast(parentControl.position, transform.TransformDirection(Vector3.left), out hit, Mathf.Infinity, layerMask))
+        Vector3 dir = Vector3.left;
+        //if (transform.localScale.x < 0)
+        //    dir = -Vector3.left;
+        //gameObject.layer = default;
+        if (Physics.Raycast(parentControl.position, parentControl.transform.TransformDirection(dir), out hit, Mathf.Infinity, layerMask))
         {
+            Debug.DrawRay(parentControl.position, parentControl.transform.TransformDirection(dir), Color.red, 1);
             if (hit.transform.CompareTag("Wall"))
             {
                 Debug.LogError("RayWall");
@@ -72,20 +77,22 @@ public class ScrollControl : MonoBehaviour
             }
             if(hit.transform.CompareTag("Scroll"))
             {
-                Debug.LogError("RayScroll");
-                targetHitPos = hit.transform.parent.transform.localPosition;
+                Debug.LogError("RayScroll " + hit.transform.name);
+                targetHitPos = hit.transform.parent.localPosition;
             }
         }
+        //gameObject.layer = layerMask;
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset + 10, 0.5f).OnComplete(() => {
             isReleased = false;
         });
         isMoving = true;
         if (parentControl.localEulerAngles.y == 0 || parentControl.localEulerAngles.y == 180)
         {
-            if(targetHitPos.x < 0)
+            if(targetHitPos.x < parentControl.transform.localPosition.x)
             {
                 parentControl.DOLocalMoveX(targetHitPos.x + 1, 0.5f)
                     .OnComplete(() => {
+                        Debug.LogError(targetHitPos.x);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
                     }); ;
@@ -94,6 +101,7 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveX(targetHitPos.x - 1, 0.5f)
                     .OnComplete(() => {
+                        Debug.LogError(targetHitPos.x);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
                     }); ;
@@ -101,10 +109,11 @@ public class ScrollControl : MonoBehaviour
         }
         else
         {
-            if (targetHitPos.z < 0)
+            if (targetHitPos.z < parentControl.transform.localPosition.z)
             {
                 parentControl.DOLocalMoveZ(targetHitPos.z + 1, 0.5f)
                     .OnComplete(() => {
+                        Debug.LogError(targetHitPos.z);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
                     }); ;
@@ -113,6 +122,7 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveZ(targetHitPos.z - 1, 0.5f)
                     .OnComplete(() => {
+                        Debug.LogError(targetHitPos.z);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
                     }); ;
@@ -128,8 +138,8 @@ public class ScrollControl : MonoBehaviour
         {
             //listScrollHit.Add(other.gameObject);
             Debug.LogError("Scroll");
-            if (isReleasing)
-            {               
+            if (isReleasing && !other.GetComponent<ScrollControl>().isReleased)
+            {
                 DOTween.KillAll();
                 ScrollReap();
             }

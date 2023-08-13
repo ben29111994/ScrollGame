@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1706.6667
     height: 976
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Inspector
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 1
-  controlID: 97614
+  controlID: 139
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 97615
+  controlID: 140
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 97616
+  controlID: 130
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 97617
+  controlID: 97
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -320,8 +320,8 @@ MonoBehaviour:
     y: 0
     width: 394.66663
     height: 926
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
@@ -747,7 +747,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.28501505, y: 0.65857846, z: -0.2977602, w: 0.62971413}
     speed: 2
-    m_Value: {x: 0.28499222, y: 0.6585257, z: -0.29773635, w: 0.6296637}
+    m_Value: {x: 0.28501508, y: 0.6585785, z: -0.2977602, w: 0.62971413}
   m_Size:
     m_Target: 4.7945037
     speed: 2
@@ -921,7 +921,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/MAIN GAME/Prefabs
+    - Assets/MAIN GAME/Scripts
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -929,16 +929,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/MAIN GAME/Prefabs
+  - Assets/MAIN GAME/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\ben29\Documents\DATA\Workplace\GoPencils\ScrollGame
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 3c740000
-    m_LastClickedID: 29756
-    m_ExpandedIDs: 000000003e73000040730000427300004473000046730000487300004a7300004c7300004e73000050730000527300005473000056730000587300005a7300005c7300005e73000060730000627300006473000066730000687300006a7300006c7300006e73000070730000727300007473000076730000787300007a7300007c7300007e73000080730000827300008473000086730000887300008a7300008c7300008e73000090730000927300009473000096730000987300009a7300009c7300009e730000a0730000a2730000a4730000a6730000a8730000aa730000ba730000ce73000000ca9a3b
+    m_SelectedIDs: cc730000
+    m_LastClickedID: 29644
+    m_ExpandedIDs: 00000000427300004473000046730000487300004a7300004c7300004e73000050730000527300005473000056730000587300005a7300005c7300005e73000060730000627300006473000066730000687300006a7300006c7300006e73000070730000727300007473000076730000787300007a7300007c7300007e73000080730000827300008473000086730000887300008a7300008c7300008e73000090730000927300009473000096730000987300009a7300009c7300009e730000a0730000a2730000a4730000a6730000a8730000aa730000ac730000ae730000b0730000b273000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -966,7 +966,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000003e73000040730000427300004473000046730000487300004a7300004c7300004e73000050730000527300005473000056730000587300005a7300005c7300005e73000060730000627300006473000066730000687300006a7300006c7300006e73000070730000727300007473000076730000787300007a7300007c7300007e73000080730000827300008473000086730000887300008a7300008c7300008e73000090730000927300009473000096730000987300009a7300009c7300009e730000a0730000a2730000a4730000a6730000a8730000aa730000ba730000ce73000000ca9a3b
+    m_ExpandedIDs: 00000000427300004473000046730000487300004a7300004c7300004e73000050730000527300005473000056730000587300005a7300005c7300005e73000060730000627300006473000066730000687300006a7300006c7300006e73000070730000727300007473000076730000787300007a7300007c7300007e73000080730000827300008473000086730000887300008a7300008c7300008e73000090730000927300009473000096730000987300009a7300009c7300009e730000a0730000a2730000a4730000a6730000a8730000aa730000ac730000ae730000b0730000b2730000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1018,7 +1018,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 0}
+    m_ScrollPosition: {x: 0, y: 136.66667}
     m_GridSize: 64
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 232
@@ -1060,23 +1060,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 7acbfbffdceffbff28f9fbff3407fcff1815fcff2429fcff6446fcff8c6dfcff3c79fcffee79fcfffa97fcff38b8fcff3400fdff7400fdffb400fdff1601fdff661cfdffa61cfdffe61cfdff6e36fdffae36fdffee36fdffdc5ffdfff45ffdff0c60fdff2460fdff3c60fdff5e60fdff7660fdff4a7ffdff627ffdffe47ffdff8ca7fdff5af4fdffacfffdff581efeff701efeffb01efefff01efeff301ffeff701ffeffba1ffeffd21ffeffdc3ffeff2a72feffa472feffd472feff1e73feffca73feff2283feffac95feff74abfeffa4abfeffa6adfeff56d8feff7edafeff26dcfefff2f7feffc21fffff602bffff502effffcc7dffff2098ffffdcaffffff8faffffb26e000060a40000a8a40000d8a40000f8a400001aa50000c8a50000d4a5000052a60000
+      m_SelectedIDs: 8a6e0000
+      m_LastClickedID: 28298
+      m_ExpandedIDs: f8faffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: Wall(Clone)
-        m_OriginalName: Wall(Clone)
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -223238
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 11}
       m_SearchString: 
