@@ -280,7 +280,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -305,7 +305,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -330,7 +330,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -355,7 +355,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -383,7 +383,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -408,7 +408,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -433,7 +433,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {
@@ -458,7 +458,7 @@ public class GameController : MonoBehaviour
                             if (scrollControl.isReleased)
                             {
                                 scrollControl.transform.localScale = new Vector3(scrollControl.transform.localScale.x * -1, 1, 1);
-                                scrollControl.ScrollReap();
+                                scrollControl.ScrollReapRevert();
                             }
                             else
                             {

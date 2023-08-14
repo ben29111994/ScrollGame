@@ -6,14 +6,17 @@ using DG.Tweening;
 using UnityEditor.SceneManagement;
 using System.Net;
 using static UnityEditor.Experimental.GraphView.GraphView;
+using System.Linq;
 
 public class ScrollControl : MonoBehaviour
 {
     public MegaBend bend;
+    public MegaMeshPage page;
     public float fullScrollLengthOffset;
     float baseOffset;
     bool isReleasing;
     bool isMoving;
+    bool isIncreaseHeight;
     public bool isReleased;
     bool isTouchWall;
     public LayerMask layerMask;
@@ -30,10 +33,6 @@ public class ScrollControl : MonoBehaviour
         transform.DOLocalMoveY(0.05f + moveY, 0);
         isReleasing = true;
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, fullScrollLengthOffset, 0.5f).OnComplete(() => { 
-            //Destroy(GetComponent<MeshCollider>()); 
-            //var addCollider = gameObject.AddComponent<MeshCollider>();
-            //addCollider.convex = true;
-            //addCollider.isTrigger = true;
             isReleasing = false;
             isReleased = true;
             if (isTouchWall)
@@ -41,6 +40,11 @@ public class ScrollControl : MonoBehaviour
                 ScrollReap();
                 isTouchWall = false;
             }
+            //else
+            //{
+            //    page.Height += 0.03f;
+            //    page.Rebuild();
+            //}
         });      
     }
 
@@ -49,39 +53,84 @@ public class ScrollControl : MonoBehaviour
         DOTween.KillAll();
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => { 
             transform.DOLocalMoveY(0.05f, 0);
-            //Destroy(GetComponent<MeshCollider>());
-            //var addCollider = gameObject.AddComponent<MeshCollider>();
-            //addCollider.convex = true;
-            //addCollider.isTrigger = true;
+            //if (!isIncreaseHeight)
+            //    page.Height = 0.2f;
+            //else
+            //{
+            //    page.Height += 0.03f;
+            //    isIncreaseHeight = false;
+            //}
+            //page.Rebuild();
             isReleased = false;
         });
     }
 
-    public void ScrollMove()
+    public void ScrollReapRevert()
     {
         DOTween.KillAll();
+        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
+            transform.DOLocalMoveY(0.05f, 0);
+            isReleased = false;
+            var scroll = transform.parent;
+            float value = 0;
+            if (scroll.localEulerAngles.y == 0 || scroll.localEulerAngles.y == 180)
+            {
+                if (transform.localScale.x < 0)
+                    value = scroll.transform.localPosition.x - int.Parse(name) + 1;
+                else
+                    value = scroll.transform.localPosition.x + int.Parse(name) - 1;
+                transform.parent = null;
+                scroll.transform.localPosition = new Vector3(value, scroll.transform.localPosition.y, scroll.transform.localPosition.z);
+            }
+            else
+            {
+                if (transform.localScale.x > 0)
+                    value = scroll.transform.localPosition.z - int.Parse(name) + 1;
+                else
+                    value = scroll.transform.localPosition.z + int.Parse(name) - 1;
+                transform.parent = null;
+                scroll.transform.localPosition = new Vector3(scroll.transform.localPosition.x, scroll.transform.localPosition.y, value);
+            }
+            transform.parent = scroll.transform;
+        });
+    }
+
+    public void ScrollMove()
+    {     
         Vector3 targetHitPos = Vector3.zero;
         var parentControl = transform.parent.transform;
         RaycastHit hit;
         Vector3 dir = Vector3.left;
-        //if (transform.localScale.x < 0)
-        //    dir = -Vector3.left;
-        //gameObject.layer = default;
-        if (Physics.Raycast(parentControl.position, parentControl.transform.TransformDirection(dir), out hit, Mathf.Infinity, layerMask))
+        if(transform.localScale.x < 0)
+        {
+            dir = -Vector3.left;
+        }
+        RaycastHit[] HitObjects = Physics.RaycastAll(parentControl.position, parentControl.transform.TransformDirection(dir), Mathf.Infinity, layerMask);
+        if (HitObjects.Length > 0)
         {
             Debug.DrawRay(parentControl.position, parentControl.transform.TransformDirection(dir), Color.red, 1);
-            if (hit.transform.CompareTag("Wall"))
+            for (int i = HitObjects.Length - 1; i >= 0; i--)
             {
-                Debug.LogError("RayWall");
-                targetHitPos = hit.transform.parent.localPosition;
-            }
-            if(hit.transform.CompareTag("Scroll"))
-            {
-                Debug.LogError("RayScroll " + hit.transform.name);
-                targetHitPos = hit.transform.parent.localPosition;
+                if (HitObjects[i].transform.CompareTag("Wall"))
+                {
+                    Debug.LogError("RayWall");
+                    targetHitPos = HitObjects[i].transform.parent.localPosition;
+                    break;
+                }
+                if (HitObjects[i].transform.CompareTag("Scroll"))
+                {
+                    Debug.LogError("RayScroll " + HitObjects[i].transform.name);
+                    if (HitObjects[i].transform.GetComponent<ScrollControl>().isReleased)
+                    {
+                        isIncreaseHeight = true;
+                        continue;
+                    }
+                    targetHitPos = HitObjects[i].transform.parent.localPosition;
+                    break;
+                }
             }
         }
-        //gameObject.layer = layerMask;
+        DOTween.KillAll();
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset + 10, 0.5f).OnComplete(() => {
             isReleased = false;
         });
@@ -94,8 +143,17 @@ public class ScrollControl : MonoBehaviour
                     .OnComplete(() => {
                         Debug.LogError(targetHitPos.x);
                         isMoving = false;
-                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                    }); ;
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
+                            //if (!isIncreaseHeight)
+                            //    page.Height = 0.2f;
+                            //else
+                            //{
+                            //    page.Height += 0.03f;
+                            //    isIncreaseHeight = false;
+                            //}
+                            //page.Rebuild();
+                        });
+                    });
             }
             else
             {
@@ -103,8 +161,17 @@ public class ScrollControl : MonoBehaviour
                     .OnComplete(() => {
                         Debug.LogError(targetHitPos.x);
                         isMoving = false;
-                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                    }); ;
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
+                            //if (!isIncreaseHeight)
+                            //    page.Height = 0.2f;
+                            //else
+                            //{
+                            //    page.Height += 0.03f;
+                            //    isIncreaseHeight = false;
+                            //}
+                            //page.Rebuild();
+                        }); 
+                    });
             }
         }
         else
@@ -115,8 +182,17 @@ public class ScrollControl : MonoBehaviour
                     .OnComplete(() => {
                         Debug.LogError(targetHitPos.z);
                         isMoving = false;
-                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                    }); ;
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
+                            //if (!isIncreaseHeight)
+                            //    page.Height = 0.2f;
+                            //else
+                            //{
+                            //    page.Height += 0.03f;
+                            //    isIncreaseHeight = false;
+                            //}
+                            //page.Rebuild();
+                        });
+                    }); 
             }
             else
             {
@@ -124,8 +200,17 @@ public class ScrollControl : MonoBehaviour
                     .OnComplete(() => {
                         Debug.LogError(targetHitPos.z);
                         isMoving = false;
-                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                    }); ;
+                        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
+                            //if (!isIncreaseHeight)
+                            //    page.Height = 0.2f;
+                            //else
+                            //{
+                            //    page.Height += 0.03f;
+                            //    isIncreaseHeight = false;
+                            //}
+                            //page.Rebuild();
+                        });
+                    }); 
             }
         }
     }
@@ -136,17 +221,14 @@ public class ScrollControl : MonoBehaviour
     {
         if(other.CompareTag("Scroll"))
         {
-            //listScrollHit.Add(other.gameObject);
-            Debug.LogError("Scroll");
             if (isReleasing && !other.GetComponent<ScrollControl>().isReleased)
             {
-                DOTween.KillAll();
+                DOTween.KillAll();             
                 ScrollReap();
             }
         }
         if(other.CompareTag("Wall"))
         {
-            //listWallHit.Add(other.gameObject);
             if (isReleasing)
             {
                 isTouchWall = true;
@@ -154,66 +236,13 @@ public class ScrollControl : MonoBehaviour
             }
             else if (isMoving)
             {
-                //Debug.LogError("WallReap");
-                //DOTween.KillAll();
-                ////ScrollReap();
-                //var targetHitPos = other.transform.parent.localPosition;
-                //var parentControl = transform.parent.transform;
-                //if (parentControl.localEulerAngles.y == 0 || parentControl.localEulerAngles.y == 180)
-                //{
-                //    if (targetHitPos.x < 0)
-                //    {
-                //        parentControl.DOLocalMoveX(targetHitPos.x + 1, 0.5f)
-                //            .OnComplete(() =>
-                //            {
-                //                isMoving = false;
-                //                DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                //            }); ;
-                //    }
-                //    else
-                //    {
-                //        parentControl.DOLocalMoveX(targetHitPos.x - 1, 0.5f)
-                //            .OnComplete(() =>
-                //            {
-                //                isMoving = false;
-                //                DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                //            }); ;
-                //    }
-                //}
-                //else
-                //{
-                //    if (targetHitPos.z < 0)
-                //    {
-                //        parentControl.DOLocalMoveZ(targetHitPos.z + 1, 0.5f)
-                //            .OnComplete(() =>
-                //            {
-                //                isMoving = false;
-                //                DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                //            }); ;
-                //    }
-                //    else
-                //    {
-                //        parentControl.DOLocalMoveZ(targetHitPos.z - 1, 0.5f)
-                //            .OnComplete(() =>
-                //            {
-                //                isMoving = false;
-                //                DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f);
-                //            }); ;
-                //    }
-                //}
+
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        //if (other.CompareTag("Scroll"))
-        //{
-        //    listScrollHit.Remove(other.gameObject);
-        //}
-        //if (other.CompareTag("Wall"))
-        //{
-        //    listWallHit.Remove(other.gameObject);
-        //}
+
     }
 }
