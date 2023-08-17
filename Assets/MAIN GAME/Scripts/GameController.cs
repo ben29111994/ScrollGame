@@ -10,8 +10,6 @@ using GPUInstancer;
 using System.Linq;
 using TMPro;
 using SimpleInputNamespace;
-using UnityEditorInternal.VersionControl;
-using static UnityEditor.PlayerSettings;
 
 public class GameController : MonoBehaviour
 {
@@ -20,6 +18,7 @@ public class GameController : MonoBehaviour
     [Header("Variable")]
     public int maxLevel;
     public bool isPlaying = false;
+    public static bool isControl = true;
     int maxPlusEffect = 0;
     bool isVibrate = false;
     float h, v;
@@ -40,8 +39,8 @@ public class GameController : MonoBehaviour
 
     [Header("UI")]
     public GameObject winPanel;
-    public Text currentLevelText;
-    public Text nextLevelText;
+    public TextMeshProUGUI currentLevelText;
+    public TextMeshProUGUI nextLevelText;
     int currentLevel;
     public Slider levelProgress;
     public Text cointTxt;
@@ -57,6 +56,7 @@ public class GameController : MonoBehaviour
     public GameObject upgradeMenu;
     public Joystick joystick;
     float timer;
+    public GameObject restartButton;
 
     [Header("Objects")]
     public GameObject funnel;
@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour
     public GameObject winBG;
     public GameObject gemAnim;
     public GameObject gameplay2;
-    List<Transform> listReleaseScroll = new List<Transform>();
+    public List<Transform> listReleaseScroll = new List<Transform>();
     
 
     private void Awake()
@@ -79,8 +79,6 @@ public class GameController : MonoBehaviour
 
     private void OnEnable()
     {
-        //PlayerPrefs.DeleteAll();
-        //DOTween.SetTweensCapacity(5000, 5000);
         Application.targetFrameRate = 60;
         CameraOffsetY = Camera.main.transform.position.y;
         StartCoroutine(delayRefreshInstancer());
@@ -90,26 +88,9 @@ public class GameController : MonoBehaviour
     IEnumerator delayStart()
     {
         yield return new WaitForSeconds(0.01f);
-        //AnalyticsManager.instance.CallEvent(AnalyticsManager.EventType.StartEvent);
         currentLevel = DataManager.Instance.LevelGame;
-        lastLevel = PlayerPrefs.GetInt("LastLevel");
-        if (lastLevel == currentLevel)
-        {
-            timeAttempt = PlayerPrefs.GetInt("TimeAttempt");
-            timeAttempt++;
-            PlayerPrefs.SetInt("TimeAttempt", timeAttempt);
-        }
-        else
-        {
-            lastLevel = currentLevel;
-            timeAttempt = 0;
-            PlayerPrefs.SetInt("LastLevel", lastLevel);
-            PlayerPrefs.SetInt("TimeAttempt", timeAttempt);
-        }
-        currentLevelText.text = currentLevel.ToString();
-        nextLevelText.text = (currentLevel + 1).ToString();
-        coin = DataManager.Instance.Coin;
-        cointTxt.text = coin.ToString();
+        //currentLevelText.text = currentLevel.ToString();
+        currentLevelText.text = "LEVEL " + (currentLevel + 1).ToString();
         startGameMenu.SetActive(true);
         title.DOColor(new Color32(255,255,255,0), 3);
         levelProgress.maxValue = totalPixel;
@@ -126,7 +107,7 @@ public class GameController : MonoBehaviour
     {
         //Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, new Vector3(transform.position.x, CameraOffsetY, transform.position.z - CameraOffsetZ), Time.deltaTime * 30);
         if (Input.GetMouseButton(0)) { ButtonStartGame(); }
-        if (isPlaying)
+        if (isPlaying && isControl)
         {
             //timer -= Time.deltaTime;
             //timerTxt.text = ((int)timer).ToString() + "s";
@@ -140,41 +121,8 @@ public class GameController : MonoBehaviour
             //    StartCoroutine(Win());
             //}
             Control();
-
-            for (int i = 0; i < pixels.Count; i++)
-            {
-                if (pixels[i] != null && pixels[i].GetComponent<Tile>().isCheck)
-                {
-                    Vector3 magnetField = magnetPoint.position - pixels[i].position;
-                    var dis = Vector3.Distance(magnetPoint.position, pixels[i].position);
-                    float distance = Vector3.Distance(magnetPoint.transform.position, pixels[i].transform.position);
-                    if (distance <= 2f)
-                    {
-                        pixels[i].AddForce(magnetField * forceFactor * Time.fixedDeltaTime);
-                    }
-                    else
-                    {
-                        if (OnCollected.Instance.tempSizeLevel >= pixels[i].GetComponent<Tile>().ballLevel || DataManager.Instance.SizeLevel == 8)
-                            pixels[i].AddForce(magnetField * forceFactor / distance * Time.fixedDeltaTime);
-                        else
-                        {
-                            magnetField = new Vector3(magnetField.x, 0, magnetField.z);
-                            pixels[i].AddForce(magnetField * 5000 / distance * Time.fixedDeltaTime);
-                        }
-
-                    }
-                }
-            }
         }
     }
-
-    //public void RemovePixel(Rigidbody target)
-    //{
-    //    if (target != null)
-    //    {
-    //        pixels.Remove(target);
-    //    }
-    //}
 
     private void Control()
     {
@@ -481,6 +429,15 @@ public class GameController : MonoBehaviour
         }
     }
 
+    void RefreshHeight()
+    {
+        for (int i = 0; i < listReleaseScroll.Count - 1; i++)
+        {
+            var height = i * 0.002f;
+            listReleaseScroll[i].transform.DOLocalMoveY(height, 0);
+        }
+    }
+
     private enum DraggedDirection
     {
         Up,
@@ -522,38 +479,39 @@ public class GameController : MonoBehaviour
     public void ButtonStartGame()
     {
         startGameMenu.SetActive(false);
+        restartButton.SetActive(true);
         isPlaying = true;
         isHold = true;
     }
 
     public static int coinEarn;
-    IEnumerator Win()
+    public void Win()
     {
-        yield return new WaitForSeconds(0.01f);
+        //yield return new WaitForSeconds(0.01f);
         if (isPlaying)
         {
             //AnalyticsManager.instance.CallEvent(AnalyticsManager.EventType.EndEvent);
             isPlaying = false;
             conffetiSpawn = Instantiate(conffeti);
             //winMenu_title.text = "LEVEL " + currentLevel.ToString();
-            winMenu_coin.text = coin.ToString();
-            yield return new WaitForSeconds(0.1f);
+            //winMenu_coin.text = coin.ToString();
+            //yield return new WaitForSeconds(0.1f);
             winBG.SetActive(true);
             winBG.GetComponent<MeshRenderer>().material.DOFade(1, 1);
             conffetiSpawn.transform.parent = Camera.main.transform;
             conffetiSpawn.transform.localPosition = new Vector3(winBG.transform.localPosition.x, winBG.transform.localPosition.y - 20, winBG.transform.localPosition.z);
             winPanel.SetActive(true);
             //cointTxt.gameObject.SetActive(false);
-            timerTxt.gameObject.SetActive(false);
+            //timerTxt.gameObject.SetActive(false);
             levelProgress.gameObject.SetActive(false);
-            upgradeMenu.SetActive(false);
-            funnel.GetComponent<QuickOutline>().enabled = false;
-            winMenu_coin.text = (ballCollected).ToString();
-            coinEarn = ballCollected * 10;
-            gemAnim.SetActive(true);
-            var bonusCoin = coin + pixels.Count * 10;
-            cointTxt.DOCounter(coin, bonusCoin, 1.5f);
-            DataManager.Instance.Coin = bonusCoin;
+            //upgradeMenu.SetActive(false);
+            //funnel.GetComponent<QuickOutline>().enabled = false;
+            //winMenu_coin.text = (ballCollected).ToString();
+            //coinEarn = ballCollected * 10;
+            //gemAnim.SetActive(true);
+            //var bonusCoin = coin + pixels.Count * 10;
+            //cointTxt.DOCounter(coin, bonusCoin, 1.5f);
+            //DataManager.Instance.Coin = bonusCoin;
         }
     }
 
@@ -563,26 +521,27 @@ public class GameController : MonoBehaviour
         //AddRemoveInstances.instance.Setup();
     }
 
-    public void LoadGamePlay2()
+    public void LoadNewLevel()
     {
         winPanel.SetActive(false);
         var temp = conffetiSpawn;
         Destroy(temp);
-        gameplay2.SetActive(true);
         bool isWin = false;
-        totalBall = LevelGenerator.Instance.totalBall;
-        var collectedPercentage = ballCollected * 100 / totalBall;
         winBG.SetActive(false );
-        if(collectedPercentage > 70 || (currentLevel == 1 && timeAttempt >= 1) || timeAttempt >= 5)
-        {
-            isWin = true;
-        }
-        SceneManager.LoadScene(0);
+        //SceneManager.LoadScene(0);
+        LevelGenerator.Instance.NextTask();
+        Restart();
     }
 
     public void Restart()
     {
-        SceneManager.LoadScene(0);
+        //levelProgress.gameObject.SetActive(true);
+        restartButton.SetActive(false);
+        startGameMenu.SetActive(true);
+        isPlaying = false;
+        isHold = false;
+        StartCoroutine(delayStart());
+        //SceneManager.LoadScene(0);
     }   
 
     public void OnChangeMap()
@@ -612,31 +571,8 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void Reset()
     {
-        if (other.gameObject.CompareTag("Pixel") && !other.GetComponent<Tile>().isCheck && isPlaying && !other.GetComponent<Tile>().isMagnet)
-        {
-            pixels.RemoveAll(item => item == null);
-            //if (!isVibrate)
-            //{
-            //    isVibrate = true;
-            //    StartCoroutine(delayVibrate());
-            //    MMVibrationManager.Haptic(HapticTypes.LightImpact);
-            //}
-            other.GetComponent<Tile>().isCheck = true;
-
-            pixels.Add(other.GetComponent<Rigidbody>());
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("Pixel") && other.GetComponent<Tile>().isCheck && isPlaying)
-        {
-            other.GetComponent<Tile>().isCheck = false;
-            other.GetComponent<Tile>().isMagnet = false;
-            other.transform.parent = transform.parent;
-            pixels.Remove(other.GetComponent<Rigidbody>());
-        }
+        listReleaseScroll.Clear();
     }
 }

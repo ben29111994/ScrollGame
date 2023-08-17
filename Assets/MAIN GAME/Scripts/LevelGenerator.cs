@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using DG.Tweening;
+using TMPro;
 
 public class LevelGenerator : MonoBehaviour {
 
@@ -10,6 +11,8 @@ public class LevelGenerator : MonoBehaviour {
     public List<Tasks> list2DMaps = new List<Tasks>();
     public List<Color32> listColors = new List<Color32>();
     public List<Tile> listScrolls = new List<Tile>();
+    public List<Tile> listFloors = new List<Tile>();
+    public List<ScrollControl> listScrollsSpawn = new List<ScrollControl>();
     public Texture2D map;
     public Tile tilePrefab;
     public GameObject parentObject;
@@ -20,6 +23,8 @@ public class LevelGenerator : MonoBehaviour {
     Vector3 originalPos;
     float width;
     List<float> listPosX = new List<float>();
+    public LayerMask layer;
+    public TextMeshProUGUI challengeTxt;
 
     [System.Serializable]
     public class Tasks
@@ -30,19 +35,34 @@ public class LevelGenerator : MonoBehaviour {
     void Start()
     {
         Instance = this;
-        var currentLevel = DataManager.Instance.LevelGame;
+        originalPos = parentObject.transform.position;
+        NextTask();
+    }
+
+    public void NextTask()
+    {
+        foreach(Transform child in parentObject.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        listFloors.Clear();
+        listScrollsSpawn.Clear();
+        listPosX.Clear();
+        GameController.Instance.Reset();
         var currentTask = DataManager.Instance.Task;
-        if(currentLevel >= list2DMaps.Count - 1)
+        challengeTxt.text = "Challenge " + (currentTask + 1).ToString();
+        var currentLevel = DataManager.Instance.LevelGame;
+        if (currentLevel >= list2DMaps.Count - 1)
         {
             currentLevel = 0;
             DataManager.Instance.LevelGame = currentLevel;
         }
-        map = list2DMaps[35].listTasks[currentTask];
-        originalPos = parentObject.transform.position;
+        map = list2DMaps[currentLevel].listTasks[currentTask];       
         currentParent = parentObject.transform;
         GameController.totalPixel = 0;
+        currentParent.transform.DOMoveZ(50, 0);
         GenerateMap(map);
-        parentObject.transform.position = originalPos;
+        //parentObject.transform.position = originalPos;
         parentObject.transform.localScale = Vector3.one * (20 / width);
         float centerPos = 0;
         for (int i = 0; i < listPosX.Count; i++)
@@ -51,6 +71,33 @@ public class LevelGenerator : MonoBehaviour {
         }
         centerPos /= listPosX.Count;
         parentObject.transform.DOMoveX(Mathf.Abs(centerPos), 0);
+        parentObject.transform.DOMoveZ(originalPos.z, 1);
+        //CameraFitter.instance.CameraCompute();
+    }
+
+    public bool CheckWin()
+    {
+        foreach(var item in listScrollsSpawn)
+        {
+            if (item.isReleased == false)
+                return false;
+        }
+        foreach (var item in listFloors)
+        {
+            RaycastHit hit;
+            Vector3 upVector = new Vector3(item.transform.localPosition.x, item.transform.localPosition.y + 1, item.transform.localPosition.z);
+            Vector3 dir = upVector - item.transform.localPosition;
+            if (Physics.Raycast(item.transform.position, dir, out hit, Mathf.Infinity, layer))
+            {
+                if (!hit.transform.CompareTag("Scroll"))
+                    return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void GenerateMap(Texture2D texture)
@@ -125,12 +172,13 @@ public class LevelGenerator : MonoBehaviour {
         floor.Init();
         floor.SetTransfrom(pos);
         floor.SetColor(Color.white);
+        listFloors.Add(floor);
 
         Tile instance;
         var hex = ColorUtility.ToHtmlStringRGBA(pixelColor);
         hex = hex.Remove(6, 2);
         hex = hex.ToLower();
-        Debug.Log(hex);
+        //Debug.Log(hex);
         scale = Vector3.one * 0.098f;
 
         switch (hex)
@@ -225,6 +273,8 @@ public class LevelGenerator : MonoBehaviour {
             instance.Init();
             instance.SetTransfrom(pos);
             instance.SetColor(rgbaColor);
+            var scrollControl = instance.GetComponentInChildren<ScrollControl>();
+            listScrollsSpawn.Add(scrollControl);
         }
     }
 

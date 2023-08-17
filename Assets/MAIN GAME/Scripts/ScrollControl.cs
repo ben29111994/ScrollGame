@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using UnityEditor.SceneManagement;
 using System.Net;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class ScrollControl : MonoBehaviour
 {
@@ -29,10 +28,14 @@ public class ScrollControl : MonoBehaviour
 
     public void ScrollRelease(float moveY)
     {
+        GameController.isControl = false;
         DOTween.KillAll();
+        Debug.LogError("Kill");
         transform.DOLocalMoveY(0.05f + moveY, 0);
         isReleasing = true;
-        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, fullScrollLengthOffset, 0.5f).OnComplete(() => { 
+        //IncreaseShaderLayer();
+        DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, fullScrollLengthOffset, 0.5f).OnComplete(() =>
+        {
             isReleasing = false;
             isReleased = true;
             if (isTouchWall)
@@ -40,17 +43,40 @@ public class ScrollControl : MonoBehaviour
                 ScrollReap();
                 isTouchWall = false;
             }
+            else
+            {
+                var height = (GameController.Instance.listReleaseScroll.Count - 1) * 0.002f;
+                transform.DOLocalMoveY(height, 0);
+            }
+            if (LevelGenerator.Instance.CheckWin())
+            {
+                DataManager.Instance.Task++;
+                if (DataManager.Instance.Task > 2)
+                {
+                    DataManager.Instance.Task = 0;
+                    DataManager.Instance.LevelGame++;
+                    GameController.Instance.Win();
+                }
+                else
+                {
+                    LevelGenerator.Instance.NextTask();
+                }
+            }
             //else
             //{
             //    page.Height += 0.03f;
             //    page.Rebuild();
             //}
-        });      
+            GameController.isControl = true;
+        });
     }
 
     public void ScrollReap()
     {
+        GameController.isControl = false;
         DOTween.KillAll();
+        Debug.LogError("Kill");
+        //IncreaseShaderLayer();
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => { 
             transform.DOLocalMoveY(0.05f, 0);
             //if (!isIncreaseHeight)
@@ -62,12 +88,15 @@ public class ScrollControl : MonoBehaviour
             //}
             //page.Rebuild();
             isReleased = false;
+            GameController.isControl = true;
         });
     }
 
     public void ScrollReapRevert()
     {
+        GameController.isControl = false;
         DOTween.KillAll();
+        Debug.LogError("Kill");
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
             transform.DOLocalMoveY(0.05f, 0);
             isReleased = false;
@@ -96,10 +125,12 @@ public class ScrollControl : MonoBehaviour
     }
 
     public void ScrollMove()
-    {     
+    {
+        GameController.isControl = false;
+        //IncreaseShaderLayer();
         Vector3 targetHitPos = Vector3.zero;
         var parentControl = transform.parent.transform;
-        RaycastHit hit;
+        //RaycastHit hit;
         Vector3 dir = Vector3.left;
         if(transform.localScale.x < 0)
         {
@@ -109,28 +140,37 @@ public class ScrollControl : MonoBehaviour
         if (HitObjects.Length > 0)
         {
             Debug.DrawRay(parentControl.position, parentControl.transform.TransformDirection(dir), Color.red, 1);
+            float distance = 9999;
             for (int i = HitObjects.Length - 1; i >= 0; i--)
             {
                 if (HitObjects[i].transform.CompareTag("Wall"))
                 {
-                    Debug.LogError("RayWall");
-                    targetHitPos = HitObjects[i].transform.parent.localPosition;
-                    break;
+                    if (Vector3.Distance(HitObjects[i].transform.parent.localPosition, transform.parent.localPosition) < distance)
+                    {
+                        targetHitPos = HitObjects[i].transform.parent.localPosition;
+                        distance = Vector3.Distance(HitObjects[i].transform.parent.localPosition, transform.parent.localPosition);
+                    }
+                    //break;
                 }
                 if (HitObjects[i].transform.CompareTag("Scroll"))
                 {
-                    Debug.LogError("RayScroll " + HitObjects[i].transform.name);
                     if (HitObjects[i].transform.GetComponent<ScrollControl>().isReleased)
                     {
-                        isIncreaseHeight = true;
+                        //isIncreaseHeight = true;
                         continue;
                     }
-                    targetHitPos = HitObjects[i].transform.parent.localPosition;
-                    break;
+                    
+                    if(Vector3.Distance(HitObjects[i].transform.parent.localPosition, transform.parent.localPosition) < distance)
+                    {
+                        targetHitPos = HitObjects[i].transform.parent.localPosition;
+                        distance = Vector3.Distance(HitObjects[i].transform.parent.localPosition, transform.parent.localPosition);
+                    }
+                    //break;
                 }
             }
         }
         DOTween.KillAll();
+        Debug.LogError("Kill");
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset + 10, 0.5f).OnComplete(() => {
             isReleased = false;
         });
@@ -141,7 +181,6 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveX(targetHitPos.x + 1, 0.5f)
                     .OnComplete(() => {
-                        Debug.LogError(targetHitPos.x);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
                             //if (!isIncreaseHeight)
@@ -152,6 +191,8 @@ public class ScrollControl : MonoBehaviour
                             //    isIncreaseHeight = false;
                             //}
                             //page.Rebuild();
+                            transform.DOLocalMoveY(0.05f, 0);
+                            GameController.isControl = true;
                         });
                     });
             }
@@ -159,7 +200,6 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveX(targetHitPos.x - 1, 0.5f)
                     .OnComplete(() => {
-                        Debug.LogError(targetHitPos.x);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
                             //if (!isIncreaseHeight)
@@ -170,6 +210,8 @@ public class ScrollControl : MonoBehaviour
                             //    isIncreaseHeight = false;
                             //}
                             //page.Rebuild();
+                            transform.DOLocalMoveY(0.05f, 0);
+                            GameController.isControl = true;
                         }); 
                     });
             }
@@ -180,7 +222,6 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveZ(targetHitPos.z + 1, 0.5f)
                     .OnComplete(() => {
-                        Debug.LogError(targetHitPos.z);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
                             //if (!isIncreaseHeight)
@@ -191,6 +232,8 @@ public class ScrollControl : MonoBehaviour
                             //    isIncreaseHeight = false;
                             //}
                             //page.Rebuild();
+                            transform.DOLocalMoveY(0.05f, 0);
+                            GameController.isControl = true;
                         });
                     }); 
             }
@@ -198,7 +241,6 @@ public class ScrollControl : MonoBehaviour
             {
                 parentControl.DOLocalMoveZ(targetHitPos.z - 1, 0.5f)
                     .OnComplete(() => {
-                        Debug.LogError(targetHitPos.z);
                         isMoving = false;
                         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
                             //if (!isIncreaseHeight)
@@ -209,6 +251,8 @@ public class ScrollControl : MonoBehaviour
                             //    isIncreaseHeight = false;
                             //}
                             //page.Rebuild();
+                            transform.DOLocalMoveY(0.05f, 0);
+                            GameController.isControl = true;
                         });
                     }); 
             }
@@ -223,7 +267,7 @@ public class ScrollControl : MonoBehaviour
         {
             if (isReleasing && !other.GetComponent<ScrollControl>().isReleased)
             {
-                DOTween.KillAll();             
+                //DOTween.KillAll();
                 ScrollReap();
             }
         }
@@ -232,17 +276,16 @@ public class ScrollControl : MonoBehaviour
             if (isReleasing)
             {
                 isTouchWall = true;
-                Debug.LogError("WallRelease");
-            }
-            else if (isMoving)
-            {
-
             }
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-
-    }
+    //public void IncreaseShaderLayer()
+    //{
+    //    var shaders = GetComponent<Renderer>().materials;
+    //    foreach(var item in shaders)
+    //    {
+    //        item.renderQueue--;
+    //    }
+    //}
 }
