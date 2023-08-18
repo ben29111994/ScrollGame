@@ -34,10 +34,10 @@ public class Tile : MonoBehaviour
 
     public void SetColor(Color inputColor)
     {
-        tileColor = inputColor;    
-        if(meshRenderer.materials.Length > 1)
+        tileColor = inputColor;
+        if (meshRenderer.materials.Length > 1)
         {
-            foreach(var mat in meshRenderer.materials)
+            foreach (var mat in meshRenderer.materials)
             {
                 mat.color = tileColor;
             }

@@ -258,9 +258,9 @@
     <Compile Include="Assets\PostProcessing\Runtime\Components\DitheringComponent.cs" />
     <Compile Include="Assets\MegaFiers\Scripts\MegaFiers\Modifiers\MegaNoise.cs" />
     <Compile Include="Assets\MegaFiers\Scripts\MegaFiers\Modifiers\MegaFFD4x4x4.cs" />
+    <Compile Include="Assets\MAIN GAME\Shaders\2DOutline\Scripts\RenderReplacementShaderToTexture.cs" />
     <Compile Include="Assets\PostProcessing\Runtime\Models\VignetteModel.cs" />
     <Compile Include="Assets\GPUInstancer\Demos\_SharedResources\Scripts\FlyCamera.cs" />
-    <Compile Include="Assets\MAIN GAME\Shaders\2DOutline\Scripts\RenderReplacementShaderToTexture.cs" />
     <Compile Include="Assets\MegaFiers\Scripts\MegaFiers\Modifiers\Warps\MegaSqueezeWarp.cs" />
     <Compile Include="Assets\MegaFiers\Scripts\MegaFiers\Utils\MegaWalkBridge.cs" />
     <Compile Include="Assets\PostProcessing\Runtime\Components\ScreenSpaceReflectionComponent.cs" />

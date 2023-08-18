@@ -50,7 +50,22 @@ public class LevelGenerator : MonoBehaviour {
         listPosX.Clear();
         GameController.Instance.Reset();
         var currentTask = DataManager.Instance.Task;
-        challengeTxt.text = "Challenge " + (currentTask + 1).ToString();
+        //challengeTxt.text = "Challenge " + (currentTask + 1).ToString();
+        foreach (var item in GameController.Instance.tasks)
+        {
+            item.transform.GetChild(0).gameObject.SetActive(false);
+            item.DOFade(0.5f, 0f);
+        }
+        for (int i = 0; i <= currentTask; i++)
+        {
+            GameController.Instance.tasks[i].DOFade(1, 0.5f);
+            if(i < currentTask)
+            {
+                GameController.Instance.tasks[i].transform.GetChild(0).gameObject.SetActive(true);
+                GameController.Instance.tasks[i].transform.GetChild(0).localScale = Vector3.zero;
+                GameController.Instance.tasks[i].transform.GetChild(0).DOScale(1, 1f).SetEase(Ease.OutBounce);
+            }
+        }
         var currentLevel = DataManager.Instance.LevelGame;
         if (currentLevel >= list2DMaps.Count - 1)
         {
@@ -96,6 +111,54 @@ public class LevelGenerator : MonoBehaviour {
             {
                 return false;
             }
+        }
+        var currentTask = DataManager.Instance.Task;
+        GameController.Instance.tasks[currentTask].transform.GetChild(0).gameObject.SetActive(true);
+        GameController.Instance.tasks[currentTask].transform.GetChild(0).localScale = Vector3.zero;
+        GameController.Instance.tasks[currentTask].transform.GetChild(0).DOScale(1, 1f).SetEase(Ease.OutBounce);
+        var random = Random.Range(0, 4);
+        switch(random)
+        {
+            case 0:
+                GameController.Instance.rateText.text = "Nice";
+                GameController.Instance.rateText.color = Color.yellow;
+                GameController.Instance.rateText.gameObject.SetActive(true);
+                GameController.Instance.rateText.transform.localScale = Vector3.zero;
+                GameController.Instance.rateText.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(()=>
+                {
+                    GameController.Instance.rateText.DOFade(0, 1.5f);
+                });
+                break;
+            case 1:
+                GameController.Instance.rateText.text = "Good!";
+                GameController.Instance.rateText.color = Color.cyan;
+                GameController.Instance.rateText.gameObject.SetActive(true);
+                GameController.Instance.rateText.transform.localScale = Vector3.zero;
+                GameController.Instance.rateText.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(() =>
+                {
+                    GameController.Instance.rateText.DOFade(0, 1.5f);
+                });
+                break;
+            case 2:
+                GameController.Instance.rateText.text = "Great!!";
+                GameController.Instance.rateText.color = Color.green;
+                GameController.Instance.rateText.gameObject.SetActive(true);
+                GameController.Instance.rateText.transform.localScale = Vector3.zero;
+                GameController.Instance.rateText.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(() =>
+                {
+                    GameController.Instance.rateText.DOFade(0, 1.5f);
+                });
+                break;
+            default:
+                GameController.Instance.rateText.text = "Perfect!!!";
+                GameController.Instance.rateText.color = Color.magenta;
+                GameController.Instance.rateText.gameObject.SetActive(true);
+                GameController.Instance.rateText.transform.localScale = Vector3.zero;
+                GameController.Instance.rateText.transform.DOScale(1, 0.5f).SetEase(Ease.InOutBounce).OnComplete(() =>
+                {
+                    GameController.Instance.rateText.DOFade(0, 1.5f);
+                });
+                break;
         }
         return true;
     }
@@ -171,7 +234,6 @@ public class LevelGenerator : MonoBehaviour {
         floor.transform.localScale = scale;
         floor.Init();
         floor.SetTransfrom(pos);
-        floor.SetColor(Color.white);
         listFloors.Add(floor);
 
         Tile instance;
