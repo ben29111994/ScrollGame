@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
-using MoreMountains.NiceVibrations;
 using UnityEngine.EventSystems;
 using GPUInstancer;
 using System.Linq;
@@ -159,7 +158,6 @@ public class GameController : MonoBehaviour
     {
         if (!isDrag)
         {
-            MMVibrationManager.Haptic(HapticTypes.MediumImpact);
 
             Vector3 startPos = Vector3.zero;
 
@@ -201,7 +199,6 @@ public class GameController : MonoBehaviour
                 Vector3 delta = lastMousePos - currentMousePos;
                 lastMousePos = currentMousePos;
 
-                MMVibrationManager.Haptic(HapticTypes.MediumImpact);
                 Vector3 dragVectorDirection = (endPoint - startPoint).normalized;
                 float checkDrag = Vector3.Distance(startPoint, endPoint);
                 DraggedDirection dir;
@@ -232,8 +229,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 180)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -258,8 +255,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 0)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -284,8 +281,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 90)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -310,8 +307,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 270)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -339,8 +336,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 0)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -365,8 +362,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 180)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -391,8 +388,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 270)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else
@@ -417,8 +414,8 @@ public class GameController : MonoBehaviour
                             }
                             else if (scroll.transform.localEulerAngles.y == 90)
                             {
-                                listReleaseScroll.Remove(scroll);
-                                RefreshHeight();
+                                //listReleaseScroll.Remove(scroll);
+                                //RefreshHeight();
                                 if (scrollControl.isReleased)
                                     scrollControl.ScrollReap();
                                 else

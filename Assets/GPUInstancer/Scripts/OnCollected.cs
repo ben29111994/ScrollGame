@@ -3,7 +3,6 @@ using GPUInstancer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MoreMountains.NiceVibrations;
 
 public class OnCollected : MonoBehaviour
 {
@@ -36,7 +35,6 @@ public class OnCollected : MonoBehaviour
             {
                 isVibrate = true;
                 StartCoroutine(delayVibrate());
-                MMVibrationManager.Haptic(HapticTypes.LightImpact);
             }
             other.GetComponent<Rigidbody>().velocity = Vector3.zero;
             other.GetComponent<Tile>().isCheck = false;

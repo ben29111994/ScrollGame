@@ -86,7 +86,17 @@ public class LevelGenerator : MonoBehaviour {
         }
         centerPos /= listPosX.Count;
         parentObject.transform.DOMoveX(Mathf.Abs(centerPos), 0);
-        parentObject.transform.DOMoveZ(originalPos.z, 1);
+        if(currentLevel == 0 && (currentTask == 0 || currentTask == 1))
+        {
+            parentObject.transform.DOMoveZ(originalPos.z + 9, 1);
+        }
+        else if((currentLevel == 6 || currentLevel == 7 || currentLevel == 8 || currentLevel == 9) && currentTask == 2)
+        {
+            parentObject.transform.DOMoveZ(originalPos.z - 6, 1);
+        }
+        else
+            parentObject.transform.DOMoveZ(originalPos.z, 1);
+        GameController.isControl = true;
         //CameraFitter.instance.CameraCompute();
     }
 

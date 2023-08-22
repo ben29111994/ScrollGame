@@ -18,6 +18,7 @@ public class ScrollControl : MonoBehaviour
     bool isIncreaseHeight;
     public bool isReleased;
     bool isTouchWall;
+    bool isTouchScroll;
     public LayerMask layerMask;
     // Start is called before the first frame update
 
@@ -29,7 +30,7 @@ public class ScrollControl : MonoBehaviour
     public void ScrollRelease(float moveY)
     {
         GameController.isControl = false;
-        DOTween.KillAll();
+        //DOTween.KillAll();
         transform.DOLocalMoveY(0.2f + moveY, 0);
         isReleasing = true;
         //IncreaseShaderLayer();
@@ -46,6 +47,8 @@ public class ScrollControl : MonoBehaviour
             {
                 var height = (GameController.Instance.listReleaseScroll.Count - 1) * 0.002f;
                 transform.DOLocalMoveY(height, 0);
+                GameController.isControl = true;
+                GameController.isDrag = false;
                 //GameController.Instance.RefreshHeight();
             }
             if (LevelGenerator.Instance.CheckWin())
@@ -68,8 +71,6 @@ public class ScrollControl : MonoBehaviour
             //    page.Height += 0.03f;
             //    page.Rebuild();
             //}
-            GameController.isControl = true;
-            GameController.isDrag = false;
         });
     }
 
@@ -85,6 +86,12 @@ public class ScrollControl : MonoBehaviour
         GameController.isControl = false;
         //DOTween.KillAll();
         //IncreaseShaderLayer();
+        if(isTouchScroll)
+        {
+            GameController.isControl = true;
+            GameController.isDrag = false;
+            return;
+        }
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => { 
             transform.DOLocalMoveY(0.2f, 0);
             //if (!isIncreaseHeight)
@@ -96,6 +103,8 @@ public class ScrollControl : MonoBehaviour
             //}
             //page.Rebuild();
             isReleased = false;
+            GameController.Instance.listReleaseScroll.Remove(transform);
+            GameController.Instance.RefreshHeight();
             GameController.isControl = true;
             GameController.isDrag = false;
         });
@@ -105,6 +114,12 @@ public class ScrollControl : MonoBehaviour
     {
         GameController.isControl = false;
         //DOTween.KillAll();
+        if (isTouchScroll)
+        {
+            GameController.isControl = true;
+            GameController.isDrag = false;
+            return;
+        }
         DOTween.To(() => bend.Offset.x, x => bend.Offset.x = x, baseOffset, 0.5f).OnComplete(() => {
             transform.DOLocalMoveY(0.2f, 0);
             isReleased = false;
@@ -129,6 +144,10 @@ public class ScrollControl : MonoBehaviour
                 scroll.transform.localPosition = new Vector3(scroll.transform.localPosition.x, scroll.transform.localPosition.y, value);
             }
             transform.parent = scroll.transform;
+            GameController.Instance.listReleaseScroll.Remove(transform);
+            GameController.Instance.RefreshHeight();
+            GameController.isControl = true;
+            GameController.isDrag = false;
         });
     }
 
@@ -279,7 +298,11 @@ public class ScrollControl : MonoBehaviour
             if (isReleasing && !other.GetComponent<ScrollControl>().isReleased)
             {
                 //DOTween.KillAll();
-                ScrollReap();
+                ScrollReap();               
+            }
+            if(isReleased)
+            {
+                isTouchScroll = true;
             }
         }
         if(other.CompareTag("Wall"))
